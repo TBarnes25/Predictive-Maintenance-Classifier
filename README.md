@@ -9,7 +9,7 @@ A machine learning project predicting machine failure from sensor readings
 - Build and compare baseline vs. stronger classifiers
 - Package the pipeline cleanly using scikit-learn
 
-**Status: In progress.** : sklearn pipeline
+**Status: Complete.** 
 
 ## Dataset & EDA
 - Source: [AI4I 2020 Predictive Maintenance Dataset, UCI ML Repository]
@@ -58,7 +58,7 @@ Chosen over logistic regression tuning as the engineered features (overstrain an
 
 -Random Forest (class weight 1:20) n_estimators = 300 (f2 = 0.815) penalising false negatives more heavily improved the f2 score
 
--Feature importance check: A precision of 1.0 on the 1:20 rf model raised concern that overstrain was dominating causing leaking. However this was disproved, overstrain 0.121, is the medina feature importance.
+-Feature importance check: A precision of 1.0 on the 1:20 rf model raised concern that overstrain was dominating causing leaking. However this was disproved, overstrain 0.121, is the median feature importance.
 -The manually-weighted (1:20) configuration was carried forward as the primary model for threshold tuning and final cross-validated evaluation below, as it produced the stronger F2.
 
 ## False Negative/Failure-Mode Analysis
@@ -74,11 +74,15 @@ Chosen over logistic regression tuning as the engineered features (overstrain an
 -Threshold selected using testing data not a subset of training data
 
 
-##Final Cross-Validated Result
-- Used statifiedkfold k=5 on training data. F2 mean of 0.79, range 0.71-0.86. F2 sd 0.0515
+## Cross-Validated Result
+- Used StratifiedKFold (k=5) on training data. F2 mean of 0.83, std 0.031. This is the more trustworthy metric compared to the single-split test result, as it reduces dependency on which specific rows ended up in the test set
 - A more useful metric then the intiial  0.828 as it removes bias from selecting specific failure cases to train on.
   
 
+## Developing the pipeline
+-I built a sklearn Pipeline so everything could be run cleanly in one file opposed to running notebooks in the correct order
+-Building the sklearn Pipeline version surfaced a genuine bug in the original notebook — a feature-adjustment cell had been re-executed against already-modified data, silently double-applying an offset. Cross-checking the pipeline's output against the notebook's identified and fixed this, improving cross-validated F2 from 0.79 to 0.83
+- A threshold sweep of the debugged pipeline still provided a threshold of 0.4
 
 
 
